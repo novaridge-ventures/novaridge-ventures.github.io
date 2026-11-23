@@ -1,0 +1,26 @@
+<!--meta {
+"title": "JSON to CSV Converter (and CSV to JSON) Online",
+"h1": "JSON to CSV / CSV to JSON Converter",
+"description": "Convert JSON arrays to CSV for Excel, or CSV to JSON. Flattens nested objects, handles quotes and commas, and supports semicolon and tab delimiters. Private, in-browser.",
+"short": "Convert JSON to Excel-ready CSV and back.",
+"lead": "Paste or open a file. Nested objects become dot.separated columns; output opens cleanly in Excel and Google Sheets.",
+"category": "Developer", "tool": true, "order": 9, "script": "jsoncsv.js", "appCategory": "DeveloperApplication",
+"faq": [
+ {"q": "How are nested JSON objects handled?", "a": "They are flattened into columns with dot notation, e.g. {\"address\":{\"city\":\"Durban\"}} becomes a column address.city. Arrays of simple values are joined with semicolons."},
+ {"q": "Why does Excel show strange characters?", "a": "The downloaded CSV includes a UTF-8 byte order mark so Excel detects the encoding correctly. If your Excel uses semicolons as the list separator (common in South Africa and Europe), choose the semicolon delimiter."},
+ {"q": "Is there a size limit?", "a": "Only your browser's memory. Files of several megabytes convert in a second or two."}
+]
+}-->
+<div class="card tool">
+  <div class="grid3">
+    <div><label for="dir">Direction</label><select id="dir"><option value="j2c">JSON → CSV</option><option value="c2j">CSV → JSON</option></select></div>
+    <div><label for="delim">Delimiter</label><select id="delim"><option value=",">Comma ,</option><option value=";">Semicolon ;</option><option value="tab">Tab</option><option value="|">Pipe |</option><option value="auto">Auto-detect (CSV input)</option></select></div>
+    <div><label for="file">Or open a file</label><input id="file" type="file" accept=".json,.csv,.txt,application/json,text/csv"></div>
+  </div>
+  <label><input id="flat" type="checkbox" checked style="width:auto"> Flatten nested objects</label>
+  <label for="in" id="inlabel">Paste JSON</label>
+  <textarea id="in" spellcheck="false">[{"id":1,"name":"Thabo","address":{"city":"Durban","code":"4001"},"tags":["vip","za"]},{"id":2,"name":"Anna, \"AJ\"","address":{"city":"Cape Town","code":"8001"},"tags":[]}]</textarea>
+  <p id="err" class="err"></p>
+  <pre class="out" id="out"></pre>
+  <button class="btn" id="copy" type="button">Copy</button><button class="btn secondary" id="dl" type="button">Download</button>
+</div>

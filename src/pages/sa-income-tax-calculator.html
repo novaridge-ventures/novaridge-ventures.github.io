@@ -1,0 +1,28 @@
+<!--meta {
+"title": "SA Income Tax & PAYE Calculator 2026/27 (SARS tables)",
+"h1": "South African Income Tax & PAYE Calculator 2026/27",
+"description": "Free SARS PAYE calculator for the 2026/27 tax year: monthly tax, UIF, medical aid credits, retirement deductions and take-home pay. Updated for Budget 2026.",
+"short": "Monthly PAYE, UIF and take-home pay using the 2026/27 SARS tax tables.",
+"lead": "Work out your monthly PAYE, UIF and take-home pay using the official SARS 2026/27 tax tables (Budget 2026).",
+"category": "South Africa", "tool": true, "order": 1, "script": "paye.js", "appCategory": "FinanceApplication",
+"faq": [
+ {"q": "What are the 2026/27 income tax brackets in South Africa?", "a": "18% up to R245 100; R44 118 + 26% above R245 100; R79 998 + 31% above R383 100; R125 599 + 36% above R530 200; R185 215 + 39% above R695 800; R259 783 + 41% above R887 000; R666 339 + 45% above R1 878 600."},
+ {"q": "How much can I earn before paying tax in 2026/27?", "a": "The tax threshold is R99 000 a year if you are under 65, R153 250 if you are 65 to 74, and R171 300 if you are 75 or older."},
+ {"q": "What are the medical scheme tax credits for 2026/27?", "a": "R376 per month each for the main member and the first dependant, and R254 per month for each additional dependant."},
+ {"q": "How is UIF calculated?", "a": "Employees contribute 1% of remuneration, capped at the UIF earnings ceiling of R17 712 per month, so the maximum is R177.12 per month. Employers contribute another 1%."},
+ {"q": "Is this calculator exact?", "a": "It is an estimate for a standard salaried employee. Fringe benefits, travel allowances, commission and the way your employer spreads a bonus can change the PAYE on your payslip."}
+],
+"prose": "<h2>How PAYE is calculated</h2><p>Your employer annualises your monthly salary, subtracts allowable deductions such as retirement fund contributions (up to 27.5% of income, capped at R350 000 a year), applies the SARS tax table, and then subtracts the rebates you qualify for: the primary rebate of R17 820, plus R9 765 from age 65 and R3 249 from age 75. Medical scheme fees tax credits are then deducted. The result divided by 12 is your monthly PAYE.</p><h2>2026/27 tax rebates</h2><table class='data'><tbody><tr><td>Primary (all taxpayers)</td><td class='num'>R17 820</td></tr><tr><td>Secondary (65 and older)</td><td class='num'>R9 765</td></tr><tr><td>Tertiary (75 and older)</td><td class='num'>R3 249</td></tr></tbody></table><p class='muted'>Source: SARS, Rates of Tax for Individuals and Budget 2026 Tax Guide. Not tax advice.</p>"
+}-->
+<div class="card tool">
+  <div class="grid2">
+    <div><label for="gross">Gross salary (R)</label><input id="gross" type="number" inputmode="decimal" value="35000" min="0"></div>
+    <div><label for="period">Salary is</label><select id="period"><option value="monthly">per month</option><option value="annual">per year</option></select></div>
+    <div><label for="bonus">Annual bonus / 13th cheque (R)</label><input id="bonus" type="number" inputmode="decimal" value="0" min="0"></div>
+    <div><label for="age">Your age at end of tax year</label><input id="age" type="number" value="35" min="15" max="120"></div>
+    <div><label for="ra">Pension / provident / RA contributions per month (R)</label><input id="ra" type="number" inputmode="decimal" value="0" min="0"></div>
+    <div><label for="med">People on your medical aid (incl. you)</label><input id="med" type="number" value="0" min="0" max="20"></div>
+    <div><label for="year">Tax year</label><select id="year"><option value="2027">2026/27 (current)</option><option value="2026">2025/26</option></select></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>

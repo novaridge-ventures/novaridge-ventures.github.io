@@ -1,0 +1,15 @@
+{
+  "siteName": "Novaridge Tools",
+  "tagline": "Free calculators and developer tools. Private, fast, no sign-up.",
+  "siteUrl": "https://novaridge-tools.pages.dev",
+  "brand": "Novaridge Ventures",
+  "contactEmail": "novaridgeventures@gmail.com",
+  "adsenseClient": "",
+  "googleSiteVerification": "",
+  "products": [
+    { "name": "Personal Finance Tracker (Excel & Google Sheets)", "url": "https://payhip.com/b/YAogS", "price": "$9", "blurb": "Budget, spending and savings dashboard in one workbook." },
+    { "name": "SQL Server DBA Toolkit (20 tested scripts)", "url": "https://payhip.com/b/iTWh0", "price": "$19", "blurb": "Index, blocking, backup and health-check scripts for SQL Server." },
+    { "name": "ShipHook .NET 8 Logistics Starter Kit", "url": "https://payhip.com/b/j4THg", "price": "$29", "blurb": "Clean-architecture .NET 8 API starter with tests." }
+  ],
+  "shop": "https://payhip.com/NovaridgeVentures"
+}

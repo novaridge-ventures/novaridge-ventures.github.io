@@ -1,0 +1,24 @@
+<!--meta {
+"title": "Compound Interest Calculator with Monthly Contributions",
+"h1": "Compound Interest & Savings Calculator",
+"description": "See how savings grow with compound interest, monthly contributions and yearly increases. Year-by-year table for TFSA, RA, unit trusts or any investment.",
+"short": "Grow savings with monthly contributions and yearly increases.",
+"lead": "Project the future value of an investment with monthly contributions that increase every year.",
+"category": "Finance", "tool": true, "order": 6, "script": "compound.js", "appCategory": "FinanceApplication",
+"faq": [
+ {"q": "What is compound interest?", "a": "Interest earned on both your contributions and the interest already earned. Over long periods, growth on growth becomes the largest part of the balance."},
+ {"q": "What return should I assume?", "a": "Use a conservative, after-fee, inflation-aware estimate. Past returns do not guarantee future returns."},
+ {"q": "What does annual increase mean?", "a": "The percentage by which you raise your monthly contribution each year, for example in line with salary increases."}
+]
+}-->
+<div class="card tool">
+  <div class="grid2">
+    <div><label for="initial">Starting amount</label><input id="initial" type="number" value="10000" min="0"></div>
+    <div><label for="monthly">Monthly contribution</label><input id="monthly" type="number" value="1500" min="0"></div>
+    <div><label for="rate">Expected return (% per year)</label><input id="rate" type="number" value="9" step="0.1"></div>
+    <div><label for="years">Years</label><input id="years" type="number" value="20" min="1" max="80"></div>
+    <div><label for="esc">Increase contribution yearly by (%)</label><input id="esc" type="number" value="5" step="0.5" min="0"></div>
+    <div><label for="cur">Currency</label><select id="cur"><option>ZAR</option><option>USD</option><option>EUR</option><option>GBP</option><option>AUD</option><option>INR</option></select></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>

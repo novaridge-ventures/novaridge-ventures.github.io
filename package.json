@@ -1,0 +1,15 @@
+{
+  "name": "novaridge-tools-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static site of free calculators and developer tools by Novaridge Ventures.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "npm run build && npm test && node scripts/check.mjs",
+    "serve": "npm run build && python3 -m http.server 8080 -d public"
+  },
+  "engines": { "node": ">=18" },
+  "license": "UNLICENSED"
+}

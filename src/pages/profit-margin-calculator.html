@@ -1,0 +1,20 @@
+<!--meta {
+"title": "Profit Margin & Markup Calculator (with 15% VAT)",
+"h1": "Profit Margin & Markup Calculator",
+"description": "Calculate selling price, gross margin and markup from your cost. Includes the VAT-inclusive price at 15%. Margin vs markup explained.",
+"short": "Selling price, margin and markup from cost, with VAT.",
+"lead": "Enter your cost plus a selling price, target margin or markup.",
+"category": "Business", "tool": true, "order": 7, "script": "margin.js", "appCategory": "BusinessApplication",
+"faq": [
+ {"q": "What is the difference between margin and markup?", "a": "Margin is profit as a percentage of the selling price; markup is profit as a percentage of cost. A R100 item sold for R150 has a 50% markup but a 33.3% margin."},
+ {"q": "How do I price for a 40% margin?", "a": "Divide cost by (1 - 0.40). A R60 cost needs a R100 price for a 40% margin."}
+]
+}-->
+<div class="card tool">
+  <div class="grid3">
+    <div><label for="cost">Cost (R)</label><input id="cost" type="number" value="60" step="any" min="0"></div>
+    <div><label for="mode">I know the</label><select id="mode"><option value="price">selling price</option><option value="margin">target margin %</option><option value="markup">markup %</option></select></div>
+    <div><label for="val" id="vlabel">Selling price (R)</label><input id="val" type="number" value="100" step="any"></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>

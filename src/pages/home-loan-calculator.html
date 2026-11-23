@@ -1,0 +1,23 @@
+<!--meta {
+"title": "Home Loan (Bond) Repayment Calculator South Africa",
+"h1": "Home Loan & Bond Repayment Calculator",
+"description": "Calculate your monthly bond repayment, total interest and how much you save by paying extra. Works for South African home loans, car finance and personal loans.",
+"short": "Monthly bond repayment, total interest and extra-payment savings.",
+"lead": "Monthly repayment, total interest, and how much time and interest an extra monthly payment saves.",
+"category": "Finance", "tool": true, "order": 5, "script": "loan.js", "appCategory": "FinanceApplication",
+"faq": [
+ {"q": "How is a bond repayment calculated?", "a": "With the standard amortisation formula: repayment = P x r / (1 - (1 + r)^-n), where P is the loan amount, r the monthly interest rate and n the number of months."},
+ {"q": "How much does paying extra on my bond save?", "a": "Because interest is charged on the outstanding balance, every extra rand reduces future interest. Enter an extra monthly amount to see the time and interest saved."},
+ {"q": "What interest rate should I use?", "a": "South African home loans are usually priced relative to the prime lending rate. Use the rate in your bank's offer, or the current prime rate as a starting point."}
+]
+}-->
+<div class="card tool">
+  <div class="grid2">
+    <div><label for="price">Purchase price (R)</label><input id="price" type="number" value="1500000" min="0"></div>
+    <div><label for="deposit">Deposit (R)</label><input id="deposit" type="number" value="150000" min="0"></div>
+    <div><label for="rate">Interest rate (% per year)</label><input id="rate" type="number" value="10.5" step="0.05" min="0"></div>
+    <div><label for="years">Term (years)</label><input id="years" type="number" value="20" min="1" max="40"></div>
+    <div><label for="extra">Extra payment per month (R, optional)</label><input id="extra" type="number" value="0" min="0"></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>

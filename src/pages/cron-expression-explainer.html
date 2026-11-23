@@ -1,0 +1,26 @@
+<!--meta {
+"title": "Cron Expression Explainer & Next Run Times",
+"h1": "Cron Expression Explainer",
+"description": "Translate a cron expression into plain English and see its next run times. Supports ranges, steps, lists, month/day names and @daily-style macros.",
+"short": "Cron to plain English, plus the next run times.",
+"lead": "Type a standard 5-field cron expression (minute hour day-of-month month day-of-week).",
+"category": "Developer", "tool": true, "order": 10, "script": "cron.js", "appCategory": "DeveloperApplication",
+"faq": [
+ {"q": "What do the five cron fields mean?", "a": "Minute (0-59), hour (0-23), day of month (1-31), month (1-12 or JAN-DEC) and day of week (0-7 or SUN-SAT, where 0 and 7 are Sunday)."},
+ {"q": "What happens when both day of month and day of week are set?", "a": "Standard (Vixie/POSIX) cron runs when EITHER matches. For example '0 0 13 * 5' runs on the 13th of every month and on every Friday."},
+ {"q": "What does */15 mean?", "a": "Every 15 units of that field, starting from its minimum. In the minute field that is minutes 0, 15, 30 and 45."}
+]
+}-->
+<div class="card tool">
+  <div class="grid2">
+    <div><label for="expr">Cron expression</label><input id="expr" value="*/15 9-17 * * 1-5" spellcheck="false" style="font-family:ui-monospace,monospace"></div>
+    <div><label for="tz">Show times in</label><select id="tz"><option value="local">My local time</option><option value="utc">UTC</option></select></div>
+  </div>
+  <p class="muted">Examples:
+    <button class="btn secondary" type="button" data-cron="0 9 * * 1-5">Weekdays 09:00</button>
+    <button class="btn secondary" type="button" data-cron="0 0 1 * *">Monthly</button>
+    <button class="btn secondary" type="button" data-cron="*/5 * * * *">Every 5 min</button>
+    <button class="btn secondary" type="button" data-cron="30 2 * * 0">Sundays 02:30</button>
+  </p>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>

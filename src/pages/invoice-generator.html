@@ -1,0 +1,36 @@
+<!--meta {
+"title": "Free Invoice Generator: Save as PDF, VAT Optional",
+"h1": "Free Invoice Generator",
+"description": "Create a professional invoice or tax invoice in your browser and save it as PDF. Supports VAT, discounts and any currency. No sign-up, nothing uploaded.",
+"short": "Make a tax invoice and save it as PDF. No sign-up.",
+"lead": "Fill in the details, then click Print / Save as PDF. Your data stays in this browser only.",
+"category": "Business", "tool": true, "order": 4, "script": "invoice.js", "appCategory": "BusinessApplication",
+"faq": [
+ {"q": "How do I save the invoice as a PDF?", "a": "Click Print / Save as PDF and choose 'Save as PDF' (or 'Microsoft Print to PDF') as the printer."},
+ {"q": "Is my invoice data stored anywhere?", "a": "Only in your own browser's local storage so you can come back to it. Nothing is sent to our servers."},
+ {"q": "What must a South African tax invoice show?", "a": "For VAT vendors a full tax invoice generally includes the words 'Tax Invoice', the supplier's name, address and VAT number, the recipient's details (and VAT number where applicable), an invoice number and date, a description of goods or services, and the VAT charged. Check SARS guidance for the current rules."}
+]
+}-->
+<div class="card tool no-print">
+  <div class="grid2">
+    <div><label for="from">From (your business name, address, email)</label><textarea id="from" style="min-height:90px" placeholder="Your Business&#10;Address&#10;email@example.com"></textarea></div>
+    <div><label for="to">Bill to</label><textarea id="to" style="min-height:90px" placeholder="Client name&#10;Address"></textarea></div>
+  </div>
+  <div class="grid3">
+    <div><label for="number">Invoice number</label><input id="number"></div>
+    <div><label for="date">Invoice date</label><input id="date" type="date"></div>
+    <div><label for="due">Due date</label><input id="due" type="date"></div>
+    <div><label for="cur">Currency</label><select id="cur"><option>ZAR</option><option>USD</option><option>EUR</option><option>GBP</option><option>AUD</option><option>CAD</option><option>NGN</option><option>KES</option><option>INR</option></select></div>
+    <div><label for="discount">Discount (%)</label><input id="discount" type="number" min="0" max="100" step="any"></div>
+    <div><label for="vatrate">VAT rate (%)</label><input id="vatrate" type="number" step="any"></div>
+  </div>
+  <label><input id="vaton" type="checkbox" style="width:auto"> Charge VAT (tax invoice)</label>
+  <div><label for="vatno">Your VAT number (optional)</label><input id="vatno"></div>
+  <label>Line items</label>
+  <table class="data inv-lines"><thead><tr><th>Description</th><th>Qty</th><th>Unit price</th><th class="num">Amount</th><th></th></tr></thead><tbody id="lines"></tbody></table>
+  <button class="btn secondary" id="add" type="button">+ Add line</button>
+  <table class="data" style="max-width:360px;margin-left:auto"><tbody id="totals"></tbody></table>
+  <div class="grid2"><div><label for="bank">Payment details</label><textarea id="bank" style="min-height:80px" placeholder="Bank, account number, branch code / PayPal"></textarea></div><div><label for="notes">Notes</label><textarea id="notes" style="min-height:80px" placeholder="Thank you for your business."></textarea></div></div>
+  <button class="btn" id="print" type="button">Print / Save as PDF</button><button class="btn secondary" id="clear" type="button">Clear</button>
+</div>
+<div class="card"><p class="muted no-print">Preview</p><div id="invoice-preview"></div></div>

@@ -1,0 +1,26 @@
+<!--meta {
+"title": "Freelancer Hourly Rate Calculator: What Should I Charge?",
+"h1": "Freelancer Hourly Rate Calculator",
+"description": "Calculate the hourly and day rate you need as a freelancer or contractor from your income goal, expenses, tax, time off and billable hours.",
+"short": "Find your minimum hourly and day rate from your income goal.",
+"lead": "Work backwards from the income you want to the hourly rate you must charge, after tax, expenses, leave and non-billable time.",
+"category": "Freelance", "tool": true, "order": 3, "script": "rate.js", "appCategory": "BusinessApplication",
+"faq": [
+ {"q": "Why is my freelance rate so much higher than my salary divided by hours?", "a": "Freelancers pay their own leave, equipment, software, medical aid and retirement, and only 50-75% of working hours are typically billable because of admin, sales and gaps between projects."},
+ {"q": "What billable percentage should I use?", "a": "60-75% is typical for established freelancers. Use 50% when you are starting out and still finding clients."},
+ {"q": "Should I quote hourly or per project?", "a": "Use this hourly rate as your floor, then price fixed projects by estimating hours and adding a buffer for risk. Clients often prefer fixed prices."}
+]
+}-->
+<div class="card tool">
+  <div class="grid2">
+    <div><label for="income">Take-home income you want per year</label><input id="income" type="number" value="600000" min="0"></div>
+    <div><label for="cur">Currency</label><select id="cur"><option>ZAR</option><option>USD</option><option>EUR</option><option>GBP</option><option>AUD</option><option>CAD</option><option>INR</option><option>NGN</option><option>KES</option></select></div>
+    <div><label for="expenses">Business expenses per year</label><input id="expenses" type="number" value="60000" min="0"></div>
+    <div><label for="tax">Average tax rate (%)</label><input id="tax" type="number" value="25" min="0" max="90"></div>
+    <div><label for="weeksoff">Weeks off per year (leave, holidays, sick)</label><input id="weeksoff" type="number" value="6" min="0" max="51"></div>
+    <div><label for="hours">Working hours per week</label><input id="hours" type="number" value="40" min="1" max="100"></div>
+    <div><label for="billable">Billable share of hours (%)</label><input id="billable" type="number" value="65" min="1" max="100"></div>
+    <div><label for="margin">Profit buffer (%)</label><input id="margin" type="number" value="10" min="0" max="200"></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>

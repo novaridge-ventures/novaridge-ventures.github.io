@@ -1,0 +1,22 @@
+<!--meta {
+"title": "VAT Calculator South Africa (15%): Add or Remove VAT",
+"h1": "VAT Calculator: Add or Remove 15% VAT",
+"description": "Add VAT to a price or remove VAT from a VAT-inclusive amount. Uses South Africa's 15% rate by default; works with any rate.",
+"short": "Add or remove 15% VAT (or any rate) instantly.",
+"lead": "Add VAT to a price or extract the VAT from an inclusive amount. Defaults to South Africa's 15% rate.",
+"category": "Business", "tool": true, "order": 2, "script": "vat.js", "appCategory": "FinanceApplication",
+"faq": [
+ {"q": "How do I remove 15% VAT from an amount?", "a": "Divide the VAT-inclusive amount by 1.15. The difference is the VAT. For example R1 150 / 1.15 = R1 000, so the VAT is R150."},
+ {"q": "How do I add 15% VAT?", "a": "Multiply the VAT-exclusive amount by 1.15. R1 000 x 1.15 = R1 150."},
+ {"q": "What is the VAT fraction in South Africa?", "a": "At 15% the tax fraction is 15/115, so VAT = inclusive amount x 15/115."},
+ {"q": "When must a business register for VAT in South Africa?", "a": "Registration is compulsory once taxable supplies exceed the compulsory registration threshold in any 12-month period, and voluntary registration is possible above the lower voluntary threshold. Check the current thresholds on the SARS website, as they are adjusted from time to time."}
+]
+}-->
+<div class="card tool">
+  <div class="grid3">
+    <div><label for="amount">Amount</label><input id="amount" type="number" inputmode="decimal" value="1000" step="any"></div>
+    <div><label for="rate">VAT rate (%)</label><input id="rate" type="number" value="15" step="any"></div>
+    <div><label for="mode">The amount</label><select id="mode"><option value="add">excludes VAT (add VAT)</option><option value="remove">includes VAT (remove VAT)</option></select></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>
