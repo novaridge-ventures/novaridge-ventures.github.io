@@ -1,0 +1,90 @@
+<!--meta {
+"title": "SPF, DKIM & DMARC checklist for SA small businesses",
+"h1": "SPF, DKIM and DMARC: a plain-English checklist for small businesses",
+"description": "Set up SPF, DKIM and DMARC for your business domain: record examples, common mistakes, and what the Gmail and Yahoo sender rules require. Free checker included.",
+"lead": "If your quotes and invoices land in spam, or someone is sending mail pretending to be you, these three DNS records are usually the fix. Written for South African small businesses, with no jargon you do not need."
+}-->
+<p class="disclosure"><strong>Check your domain first.</strong> The free <a href="https://dnslark.netlify.app/check" rel="noopener" target="_blank">DNSLark email checker</a> looks up your SPF, DKIM and DMARC records, scores them and tells you what to fix. No sign-up. Then use the checklist below.</p>
+
+<h2>What the three records do</h2>
+<ul>
+<li><strong>SPF</strong> (Sender Policy Framework) is a TXT record on your domain listing the servers allowed to send mail as you.</li>
+<li><strong>DKIM</strong> (DomainKeys Identified Mail) adds a cryptographic signature to each message. The public key lives in DNS so receivers can check the mail was not changed and really came from your domain's sender.</li>
+<li><strong>DMARC</strong> tells receivers what to do when a message fails SPF and DKIM, and sends you reports. To pass DMARC, SPF or DKIM must pass <em>and</em> the authenticated domain must match the domain in the From: address (called alignment).</li>
+</ul>
+
+<h2>1. SPF: one record, every sender listed</h2>
+<p>Publish a single TXT record at the root of the domain (<code>@</code>). Examples:</p>
+<pre class="out">; Microsoft 365 only
+v=spf1 include:spf.protection.outlook.com -all
+
+; Google Workspace only
+v=spf1 include:_spf.google.com ~all
+
+; Google Workspace plus a mailing tool (use the include your provider gives you)
+v=spf1 include:_spf.google.com include:servers.example-mailer.com ~all</pre>
+<ul>
+<li>Only <strong>one</strong> SPF record per domain. Two <code>v=spf1</code> records is a permanent error, and SPF then fails for everything.</li>
+<li>SPF allows at most <strong>10 DNS lookups</strong> (each <code>include</code>, <code>a</code>, <code>mx</code>, <code>exists</code> and <code>redirect</code> counts, including nested ones). Remove services you no longer use.</li>
+<li>End with <code>~all</code> (soft fail) while you are testing, then <code>-all</code> once you are sure every sender is listed. Never use <code>+all</code>.</li>
+<li>Remember the things that send as you without you noticing: your accounting package, website contact form, booking system, and the till or POS slips emailed to customers.</li>
+</ul>
+
+<h2>2. DKIM: switch it on at every sender</h2>
+<p>DKIM is enabled in each sending service, which then gives you a DNS record to publish at <code>selector._domainkey.yourdomain.co.za</code>. Microsoft 365 uses two CNAME records (<code>selector1</code> and <code>selector2</code>); Google Workspace gives you a TXT record (default selector <code>google</code>). A DKIM TXT record looks like this:</p>
+<pre class="out">google._domainkey.yourdomain.co.za  TXT  "v=DKIM1; k=rsa; p=MIIBIjANBgkqh...IDAQAB"</pre>
+<ul>
+<li>Use a 2048-bit key where the provider allows it. Yahoo asks for at least 1024-bit.</li>
+<li>Publishing the record is not enough: also press "Start authentication" (Google) or enable signing (Microsoft 365) in the admin console.</li>
+<li>Do the same for your mailing-list or invoicing tool, so its mail is signed with <em>your</em> domain, not only the tool's.</li>
+</ul>
+
+<h2>3. DMARC: start with monitoring, then enforce</h2>
+<p>Publish a TXT record at <code>_dmarc.yourdomain.co.za</code>:</p>
+<pre class="out">; Step 1: monitor only, collect reports
+v=DMARC1; p=none; rua=mailto:dmarc-reports@yourdomain.co.za
+
+; Step 2: once reports show all your real mail passing
+v=DMARC1; p=quarantine; pct=100; rua=mailto:dmarc-reports@yourdomain.co.za
+
+; Step 3: full protection against spoofing
+v=DMARC1; p=reject; rua=mailto:dmarc-reports@yourdomain.co.za</pre>
+<ul>
+<li><code>p=none</code> protects nobody; it only reports. It is the right first step and meets the minimum Gmail and Yahoo require for bulk senders, but plan to move to <code>quarantine</code> or <code>reject</code>.</li>
+<li>Only one DMARC record, and it must be at <code>_dmarc</code>, not at the root.</li>
+<li>Point <code>rua</code> at a mailbox you actually read, or at a free report-reading service.</li>
+</ul>
+
+<h2>Common mistakes we see</h2>
+<ul>
+<li>Two SPF records after a move from one email provider to another.</li>
+<li>SPF over the 10-lookup limit because every tool ever tried is still included.</li>
+<li>DKIM key published but signing never switched on.</li>
+<li>DMARC left at <code>p=none</code> for years, so anyone can still spoof the domain.</li>
+<li>Website contact forms sending "From:" the visitor's address through your server, which fails alignment. Send from your own address and put the visitor in Reply-To.</li>
+<li>Records added at the wrong host name, for example <code>_dmarc.yourdomain.co.za.yourdomain.co.za</code> because the DNS panel appends the domain automatically.</li>
+</ul>
+
+<h2>What Gmail and Yahoo require</h2>
+<p>Since February 2024 Google and Yahoo require <strong>all senders</strong> to their users to authenticate with SPF or DKIM, have valid forward and reverse DNS (PTR) for sending IPs, follow the email format standard (RFC 5322) and keep spam complaints below 0.3%. Gmail also requires TLS.</p>
+<p><strong>Bulk senders</strong> (Google defines this as close to 5,000 or more messages a day to personal Gmail accounts; once you hit it, you are treated as a bulk sender permanently) must also:</p>
+<ul>
+<li>authenticate with <strong>both</strong> SPF and DKIM;</li>
+<li>publish DMARC with at least <code>p=none</code>, with the From: domain aligned to the SPF or DKIM domain;</li>
+<li>support one-click unsubscribe (the List-Unsubscribe and List-Unsubscribe-Post headers of RFC 8058) on marketing mail, plus a visible unsubscribe link, and honour unsubscribes within 48 hours (Gmail) or 2 days (Yahoo);</li>
+<li>keep the spam rate below 0.3%; Google advises staying under 0.1%.</li>
+</ul>
+<p>Google says that from November 2025 it is ramping up enforcement, with non-compliant mail facing temporary and permanent rejections. Even if you send far fewer than 5,000 a day, setting up all three records is the cheapest deliverability win available.</p>
+
+<h2>Frequently asked questions</h2>
+<details><summary>Do I need DMARC if I only send a few emails a day?</summary><p>Gmail and Yahoo only require it from bulk senders, but without DMARC anyone can send mail that claims to be from your domain, for example fake invoices with changed banking details. A DMARC record costs nothing to publish.</p></details>
+<details><summary>Should SPF end in ~all or -all?</summary><p>Use ~all while you confirm every service that sends for you, then move to -all. With DMARC at quarantine or reject, the DMARC policy decides what happens to failing mail in practice.</p></details>
+<details><summary>How long do DNS changes take?</summary><p>Usually minutes to a few hours, depending on the record's TTL. Run the checker again after you save the change.</p></details>
+
+<h2>Sources</h2>
+<ul>
+<li>Google: <a href="https://support.google.com/mail/answer/81126" rel="noopener" target="_blank">Email sender guidelines</a> and <a href="https://support.google.com/mail/answer/14229414" rel="noopener" target="_blank">sender guidelines FAQ</a></li>
+<li>Yahoo: <a href="https://senders.yahooinc.com/best-practices/" rel="noopener" target="_blank">Sender best practices</a></li>
+<li>IETF: <a href="https://www.rfc-editor.org/rfc/rfc7208" rel="noopener" target="_blank">RFC 7208 (SPF)</a>, <a href="https://www.rfc-editor.org/rfc/rfc6376" rel="noopener" target="_blank">RFC 6376 (DKIM)</a>, <a href="https://www.rfc-editor.org/rfc/rfc7489" rel="noopener" target="_blank">RFC 7489 (DMARC)</a>, <a href="https://www.rfc-editor.org/rfc/rfc8058" rel="noopener" target="_blank">RFC 8058 (one-click unsubscribe)</a></li>
+</ul>
+<p>Next step: <a href="https://dnslark.netlify.app/check" rel="noopener" target="_blank">check your domain with DNSLark</a>. Setting up a new domain? See <a href="/hosting-and-domains/">hosting and domains for SA freelancers</a>.</p>
