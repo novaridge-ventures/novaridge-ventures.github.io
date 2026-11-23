@@ -12,6 +12,38 @@ const today = new Date().toISOString().slice(0, 10);
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+const AFF_DEFAULTS = {
+    namecheap: 'https://www.namecheap.com',
+    digitalocean: 'https://www.digitalocean.com',
+};
+function affUrl(key) {
+    const u = cfg.affiliates?.[key]?.url;
+    return (u && String(u).trim()) || AFF_DEFAULTS[key];
+}
+function affRel(key) {
+    const u = cfg.affiliates?.[key]?.url;
+    return (u && String(u).trim()) ? 'sponsored noopener' : 'noopener';
+}
+function applyPlaceholders(body, meta) {
+    let out = body
+        .replaceAll('{{AFF_NAMECHEAP}}', esc(affUrl('namecheap')))
+        .replaceAll('{{REL_NAMECHEAP}}', affRel('namecheap'))
+        .replaceAll('{{AFF_DIGITALOCEAN}}', esc(affUrl('digitalocean')))
+        .replaceAll('{{REL_DIGITALOCEAN}}', affRel('digitalocean'));
+    if (meta?.shop) {
+        const checkout = (cfg.payfast?.checkoutUrl || '').trim();
+        const cards = (cfg.products || []).map((x) => {
+            const zar = Number(x.priceZar);
+            const eft = checkout && Number.isFinite(zar) && zar > 0 && x.id
+                ? `<button type="button" class="btn secondary" data-sku="${esc(x.id)}">Pay with Instant EFT</button>`
+                : '';
+            return `<article class="card"><h2>${esc(x.name)}</h2><p class="price">${esc(x.price)}</p><p>${esc(x.blurb)}</p><p><a class="btn" href="${esc(x.url)}" rel="noopener" target="_blank">View on Payhip</a>${eft}</p></article>`;
+        }).join('');
+        out = out.replace('<!--shop-products-->', `<div class="product-grid">${cards}</div>`);
+    }
+    return out;
+}
+
 export function parsePage(file) {
     const raw = readFileSync(file, 'utf8');
     const m = /^<!--meta\s*([\s\S]*?)-->\s*/.exec(raw);
@@ -25,7 +57,7 @@ const pages = readdirSync(pagesDir).filter((f) => f.endsWith('.html')).map((f) =
     const { meta, body } = parsePage(join(pagesDir, f));
     const slug = f.replace(/\.html$/, '');
     const path = slug === 'index' ? '/' : `/${slug}/`;
-    return { slug, path, meta, body };
+    return { slug, path, meta, body: applyPlaceholders(body, meta) };
 });
 const tools = pages.filter((p) => p.meta.tool).sort((a, b) => (a.meta.order ?? 99) - (b.meta.order ?? 99));
 
@@ -43,7 +75,7 @@ function jsonLd(p) {
 
 const adSlot = () => (ADSENSE ? `<div class="ad-slot no-print"><ins class="adsbygoogle" style="display:block" data-ad-client="${esc(ADSENSE)}" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>` : '');
 
-const promo = () => `<div class="card promo"><h2>From the Novaridge shop</h2>${cfg.products.map((x) => `<a class="p" href="${esc(x.url)}" rel="noopener" target="_blank">${esc(x.name)} &middot; ${esc(x.price)}</a><small>${esc(x.blurb)}</small>`).join('')}<p class="muted"><a href="${esc(cfg.shop)}" rel="noopener" target="_blank">See all products &rarr;</a></p></div>`;
+const promo = () => `<div class="card promo"><h2>From the Novaridge shop</h2>${cfg.products.map((x) => `<a class="p" href="${esc(x.url)}" rel="noopener" target="_blank">${esc(x.name)} &middot; ${esc(x.price)}</a><small>${esc(x.blurb)}</small>`).join('')}<p class="muted"><a href="/shop/">See all products &rarr;</a></p></div>`;
 
 function sidebar(p) {
     const related = tools.filter((t) => t.slug !== p.slug).slice(0, 8);
@@ -87,10 +119,11 @@ ${jsonLd(p)}
 </head>
 <body>
 <header class="site"><div class="wrap"><a class="logo" href="/">Novaridge<span>Tools</span></a>
-<nav class="top" aria-label="Main"><a href="/sa-income-tax-calculator/">SA Tax</a><a href="/vat-calculator/">VAT</a><a href="/invoice-generator/">Invoice</a><a href="/sql-formatter/">SQL</a><a href="/json-to-csv/">JSON&rarr;CSV</a><a href="/">All tools</a></nav></div></header>
+<nav class="top" aria-label="Main"><a href="/sa-income-tax-calculator/">SA Tax</a><a href="/vat-calculator/">VAT</a><a href="/invoice-generator/">Invoice</a><a href="/sql-formatter/">SQL</a><a href="/shop/">Shop</a><a href="/">All tools</a></nav></div></header>
 <main><div class="wrap">${main}</div></main>
 <footer class="site"><div class="wrap"><p>&copy; ${new Date().getFullYear()} ${esc(cfg.brand)}. Free tools that run entirely in your browser; nothing you type is uploaded.</p>
-<p><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms &amp; disclaimer</a><a href="mailto:${esc(cfg.contactEmail)}">Contact</a><a href="${esc(cfg.shop)}" rel="noopener" target="_blank">Shop</a></p></div></footer>
+<p><a href="/about/">About</a><a href="/libraries/">Libraries</a><a href="/shop/">Shop</a><a href="/hosting-and-domains/">Hosting</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms &amp; disclaimer</a><a href="mailto:${esc(cfg.contactEmail)}">Contact</a></p></div></footer>
+${p.meta.shop ? `<script>window.NOVARIDGE_SHOP=${JSON.stringify({ checkoutUrl: (cfg.payfast?.checkoutUrl || '') })}</script>` : ''}
 ${p.meta.script ? `<script type="module" src="/assets/js/pages/${esc(p.meta.script)}"></script>` : ''}
 </body>
 </html>
