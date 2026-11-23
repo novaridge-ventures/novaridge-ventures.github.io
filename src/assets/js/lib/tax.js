@@ -86,3 +86,33 @@ export function calculatePaye(p) {
         effectiveRate: grossAnnual ? annualTax / grossAnnual : 0, marginalRate: marginal,
     };
 }
+
+/**
+ * Provisional tax (IRP6) estimate for freelancers / sole proprietors.
+ * Payment 1 (end Aug): 50% of the estimated annual liability less employees' tax (PAYE) for the first 6 months.
+ * Payment 2 (end Feb): full estimated liability less PAYE for the full year and less payment 1.
+ * @param {object} p { turnover, expenses, otherIncome, retirementAnnual, age, medicalMembers, payeFirstHalf, payeFullYear, year }
+ */
+export function provisionalTax(p) {
+    const year = p.year || '2027';
+    const t = TAX_YEARS[year];
+    const n = (v) => Math.max(0, Number(v) || 0);
+    const businessProfit = Number(p.turnover || 0) - n(p.expenses);
+    const incomeBeforeRa = Math.max(0, businessProfit + n(p.otherIncome));
+    const retirementDeduction = Math.min(n(p.retirementAnnual), incomeBeforeRa * t.retirementCap.pct, t.retirementCap.max);
+    const taxable = Math.max(0, incomeBeforeRa - retirementDeduction);
+    const taxBeforeRebates = taxOnIncome(taxable, year);
+    const rebates = rebateFor(Number(p.age) || 30, year);
+    const medical = medicalCreditAnnual(p.medicalMembers, year);
+    const liability = Math.max(0, taxBeforeRebates - rebates - medical);
+    const payeFirstHalf = n(p.payeFirstHalf);
+    const payeFullYear = Math.max(n(p.payeFullYear), payeFirstHalf);
+    const first = Math.max(0, liability / 2 - payeFirstHalf);
+    const second = Math.max(0, liability - payeFullYear - first);
+    const marginal = taxable > 0 ? t.brackets.find((br) => taxable <= br.upTo).rate : 0;
+    return {
+        year, businessProfit, incomeBeforeRa, retirementDeduction, taxable, taxBeforeRebates, rebates, medicalCredit: medical,
+        liability, payeFullYear, first, second, totalProvisional: first + second,
+        monthlySetAside: (first + second) / 12, effectiveRate: incomeBeforeRa ? liability / incomeBeforeRa : 0, marginalRate: marginal,
+    };
+}

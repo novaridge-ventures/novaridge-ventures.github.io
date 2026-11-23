@@ -1,0 +1,30 @@
+<!--meta {
+"title": "Provisional Tax Calculator South Africa 2026/27 (IRP6)",
+"h1": "Provisional Tax Calculator for SA Freelancers (IRP6, 2026/27)",
+"description": "Estimate your first and second IRP6 provisional tax payments for 2026/27. For South African freelancers and side hustlers, using SARS tax tables.",
+"short": "Work out your August and February IRP6 payments.",
+"lead": "Enter your expected turnover and expenses to estimate your 2026/27 tax and the two IRP6 payments due by 31 August and end February.",
+"category": "South Africa", "tool": true, "order": 1.5, "script": "provisional.js", "appCategory": "FinanceApplication",
+"faq": [
+ {"q": "Who has to pay provisional tax in South Africa?", "a": "Anyone who earns income that is not salary, such as freelance, consulting, business or rental income, is generally a provisional taxpayer. Individuals with no business income are exempt if their taxable income stays below the tax threshold, or if their only non-salary income is interest, dividends and rental of R30 000 or less and total taxable income is R1 million or less."},
+ {"q": "When are provisional tax payments due?", "a": "For a tax year ending in February, the first IRP6 is due by the end of August and the second by the end of February. An optional third (top-up) payment can be made by 30 September, after year-end, to reduce interest."},
+ {"q": "How is the first provisional payment calculated?", "a": "Take half of your estimated tax for the full year and subtract the employees' tax (PAYE) withheld for the first six months and any foreign tax credits."},
+ {"q": "How is the second provisional payment calculated?", "a": "Take your estimated tax for the full year and subtract PAYE for the full year, the first provisional payment and any foreign tax credits."},
+ {"q": "What is the underestimation penalty?", "a": "If your taxable income is R1 million or less, your second estimate must be at least 90% of your actual taxable income (or the basic amount, whichever is less). Above R1 million it must be at least 80%. Otherwise SARS can levy a penalty of 20% of the shortfall in tax. Late payment attracts a 10% penalty plus interest."}
+],
+"prose": "<h2>How this provisional tax estimate works</h2><p>The calculator subtracts your business expenses from turnover, adds other taxable income (for example interest above the exemption or a salary), deducts retirement annuity contributions (limited to 27.5% of income and R350 000 a year), applies the SARS 2026/27 tax table and then subtracts the age rebates and medical scheme fees tax credits. Half of that annual liability, less PAYE already withheld, is your first payment. The rest is your second payment.</p><h2>A simple habit that avoids a February shock</h2><p>Move the <strong>set aside per month</strong> amount into a separate savings account every time a client pays you. Freelancers who do this rarely struggle to make the August and February payments.</p><h2>Want the full working, month by month?</h2><p>The <a href='https://payhip.com/b/Wa0DP' target='_blank' rel='noopener'>SA Freelancer Tax &amp; IRP6 Estimator</a> (Excel and Google Sheets) tracks income and expenses every month, keeps a running provisional tax estimate and a set-aside balance, and shows the 90% safe-harbour figure for your second IRP6. To log invoices and expenses as you go, see the <a href='https://payhip.com/b/YAogS' target='_blank' rel='noopener'>Finance Tracker</a>.</p><p class='muted'>Source: SARS Rates of Tax for Individuals 2026/27 and the Fourth Schedule to the Income Tax Act. This is an estimate, not tax advice. Related: <a href='/sa-income-tax-calculator/'>PAYE calculator</a>, <a href='/freelancer-hourly-rate-calculator/'>freelancer hourly rate</a>, <a href='/invoice-generator/'>invoice generator</a>.</p>"
+}-->
+<div class="card tool">
+  <div class="grid2">
+    <div><label for="turnover">Expected freelance / business turnover for the year (R)</label><input id="turnover" type="number" inputmode="decimal" value="480000" min="0"></div>
+    <div><label for="expenses">Deductible business expenses for the year (R)</label><input id="expenses" type="number" inputmode="decimal" value="60000" min="0"></div>
+    <div><label for="other">Other taxable income, e.g. salary or taxable interest (R)</label><input id="other" type="number" inputmode="decimal" value="0" min="0"></div>
+    <div><label for="ra">Retirement annuity contributions for the year (R)</label><input id="ra" type="number" inputmode="decimal" value="0" min="0"></div>
+    <div><label for="paye1">PAYE withheld, first 6 months (Mar to Aug) (R)</label><input id="paye1" type="number" inputmode="decimal" value="0" min="0"></div>
+    <div><label for="paye2">PAYE withheld, full year (R)</label><input id="paye2" type="number" inputmode="decimal" value="0" min="0"></div>
+    <div><label for="age">Your age at end of tax year</label><input id="age" type="number" value="35" min="15" max="120"></div>
+    <div><label for="med">People on your medical aid (incl. you)</label><input id="med" type="number" value="0" min="0" max="20"></div>
+    <div><label for="year">Tax year</label><select id="year"><option value="2027">2026/27 (current)</option><option value="2026">2025/26</option></select></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>

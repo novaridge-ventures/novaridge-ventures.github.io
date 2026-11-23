@@ -1,0 +1,76 @@
+<!--meta {
+"title": "SQL Server Backup Verification Checklist (with T-SQL)",
+"h1": "SQL Server Backup Verification Checklist",
+"description": "A 10-step checklist to prove your SQL Server backups can actually be restored, with copy-paste T-SQL for checksums, RESTORE VERIFYONLY, test restores and CHECKDB.",
+"short": "10 checks, with T-SQL, that prove your backups restore.",
+"lead": "A backup that has never been restored is a hope, not a backup. Work through these ten checks; your progress is saved in this browser.",
+"category": "Developer", "tool": true, "order": 8.5, "script": "checklist.js", "appCategory": "DeveloperApplication",
+"faq": [
+ {"q": "Does RESTORE VERIFYONLY prove a backup is good?", "a": "No. It checks that the backup set is complete and readable and, if the backup was taken WITH CHECKSUM, re-validates page checksums. It does not prove the database is free of logical corruption. Only a real test restore followed by DBCC CHECKDB proves that."},
+ {"q": "Should I use WITH CHECKSUM on every backup?", "a": "Yes. It makes SQL Server verify page checksums as it reads pages and stores a checksum for the whole backup, so corruption is caught at backup time. You can turn it on server-wide with sp_configure 'backup checksum default', 1 (SQL Server 2014 and later)."},
+ {"q": "How often should I test restore SQL Server backups?", "a": "At least monthly for every important database, and after any change to backup jobs, storage or encryption. Many teams automate a nightly restore of the latest full and log backups to a test server and run CHECKDB there."},
+ {"q": "How do I find databases with no recent backup?", "a": "Query msdb.dbo.backupset for the latest backup_finish_date per database and backup type, left-joined to sys.databases so databases that have never been backed up also appear. The first script on this page does exactly that."}
+],
+"prose": "<h2>Automate the boring part</h2><p>Running these checks by hand every week is how they stop getting done. The <a href='https://payhip.com/b/iTWh0' target='_blank' rel='noopener'>SQL Server DBA Toolkit</a> ($19) includes tested scripts for backup history and gaps, restore-chain checks, index health, blocking and waits, plus PowerShell and bash runners so you can schedule them and email the output.</p><p class='muted'>Scripts are read-only except the test restore, which you should only run on a non-production server. Tested on SQL Server 2019 and 2022. Related: <a href='/sql-formatter/'>SQL formatter</a>, <a href='/cron-expression-explainer/'>cron expression explainer</a>.</p>"
+}-->
+<div class="card tool" id="checklist">
+  <p><strong id="progress">0 of 10 checks done</strong> <button class="btn" id="reset" type="button">Reset</button></p>
+
+  <h2><label><input type="checkbox" data-k="recent" style="width:auto"> 1. Every database has a recent full backup (and log backups if FULL recovery)</label></h2>
+  <pre class="out">SELECT d.name, d.recovery_model_desc,
+       MAX(CASE WHEN b.type = 'D' THEN b.backup_finish_date END) AS last_full,
+       MAX(CASE WHEN b.type = 'I' THEN b.backup_finish_date END) AS last_diff,
+       MAX(CASE WHEN b.type = 'L' THEN b.backup_finish_date END) AS last_log
+FROM sys.databases AS d
+LEFT JOIN msdb.dbo.backupset AS b ON b.database_name = d.name
+WHERE d.name &lt;&gt; 'tempdb'
+GROUP BY d.name, d.recovery_model_desc
+ORDER BY last_full;</pre>
+  <p>Flag any database with no full backup inside your policy window, and any FULL-recovery database whose last log backup is older than your RPO.</p>
+
+  <h2><label><input type="checkbox" data-k="checksum" style="width:auto"> 2. Backups are taken WITH CHECKSUM</label></h2>
+  <pre class="out">-- Were recent backups checksummed?
+SELECT TOP (50) database_name, type, backup_finish_date, has_backup_checksums, is_damaged
+FROM msdb.dbo.backupset ORDER BY backup_finish_date DESC;
+
+-- Turn it on for every backup (SQL Server 2014+)
+EXEC sp_configure 'backup checksum default', 1; RECONFIGURE;</pre>
+
+  <h2><label><input type="checkbox" data-k="verifyonly" style="width:auto"> 3. RESTORE VERIFYONLY passes on the latest backup file</label></h2>
+  <pre class="out">RESTORE VERIFYONLY FROM DISK = N'X:\Backups\Sales_FULL.bak' WITH CHECKSUM;</pre>
+  <p>Useful and cheap, but it only proves the file is readable. Keep going.</p>
+
+  <h2><label><input type="checkbox" data-k="headers" style="width:auto"> 4. You know what is inside the backup file</label></h2>
+  <pre class="out">RESTORE HEADERONLY   FROM DISK = N'X:\Backups\Sales_FULL.bak';
+RESTORE FILELISTONLY FROM DISK = N'X:\Backups\Sales_FULL.bak';</pre>
+  <p>Confirm the database name, backup date, whether the file holds several backup sets, and the logical file names you need for MOVE.</p>
+
+  <h2><label><input type="checkbox" data-k="restore" style="width:auto"> 5. A test restore succeeds on a non-production server</label></h2>
+  <pre class="out">RESTORE DATABASE Sales_RestoreTest
+FROM DISK = N'X:\Backups\Sales_FULL.bak'
+WITH MOVE N'Sales'     TO N'T:\Data\Sales_RestoreTest.mdf',
+     MOVE N'Sales_log' TO N'T:\Log\Sales_RestoreTest.ldf',
+     CHECKSUM, STATS = 10, RECOVERY;</pre>
+
+  <h2><label><input type="checkbox" data-k="checkdb" style="width:auto"> 6. DBCC CHECKDB is clean on the restored copy</label></h2>
+  <pre class="out">DBCC CHECKDB (Sales_RestoreTest) WITH NO_INFOMSGS, ALL_ERRORMSGS;</pre>
+  <p>This offloads integrity checking from production and proves the backup contains a consistent database.</p>
+
+  <h2><label><input type="checkbox" data-k="chain" style="width:auto"> 7. The log chain restores to a point in time</label></h2>
+  <pre class="out">-- Restore the full WITH NORECOVERY, then each log in order:
+RESTORE LOG Sales_RestoreTest FROM DISK = N'X:\Backups\Sales_LOG_0100.trn' WITH NORECOVERY;
+RESTORE LOG Sales_RestoreTest FROM DISK = N'X:\Backups\Sales_LOG_0115.trn'
+  WITH STOPAT = '2026-11-23T01:10:00', RECOVERY;</pre>
+  <p>A missing or out-of-band log backup (for example someone's ad-hoc backup without COPY_ONLY) breaks the chain. Find out now, not during an outage.</p>
+
+  <h2><label><input type="checkbox" data-k="rto" style="width:auto"> 8. Restore time is measured and within your RTO</label></h2>
+  <p>Record how long steps 5 to 7 took. If restoring the biggest database takes three hours and the business expects one, you need a different plan (compression, striped backups, faster storage, or a standby).</p>
+
+  <h2><label><input type="checkbox" data-k="offsite" style="width:auto"> 9. A copy lives off the server, ideally immutable</label></h2>
+  <p>Backups on the same disk or the same SAN as the data are lost with it. Keep at least one copy off-site or in object storage with retention lock, so ransomware cannot delete it too.</p>
+
+  <h2><label><input type="checkbox" data-k="alerts" style="width:auto"> 10. Failures alert someone, and corruption is watched</label></h2>
+  <pre class="out">SELECT * FROM msdb.dbo.suspect_pages;          -- should be empty
+SELECT name, enabled FROM msdb.dbo.sysjobs WHERE name LIKE '%backup%';
+-- Add SQL Agent alerts for errors 823, 824 and 825 with an operator to notify.</pre>
+</div>

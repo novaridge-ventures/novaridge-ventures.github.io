@@ -118,3 +118,20 @@ test('SQL formatter keeps strings/identifiers and breaks clauses', () => {
     assert.ok(tokenize('/* a */ select 1').some((t) => t.type === 'blockcomment'));
     assert.match(formatSql('select * from (select id from t) s'), /FROM \(\n {4}SELECT id\n {4}FROM t\n\) s/);
 });
+
+import { provisionalTax } from '../src/assets/js/lib/tax.js';
+test('provisional tax: two payments split the annual liability, PAYE credited', () => {
+    const r = provisionalTax({ turnover: 600000, expenses: 100000, age: 35, year: '2027' });
+    near(r.taxable, 500000);
+    near(r.liability, taxOnIncome(500000) - rebateFor(35));
+    near(r.first, r.liability / 2);
+    near(r.first + r.second, r.liability);
+    const w = provisionalTax({ turnover: 600000, expenses: 100000, age: 35, payeFirstHalf: 20000, payeFullYear: 40000 });
+    near(w.first, w.liability / 2 - 20000);
+    near(w.first + w.second + 40000, w.liability);
+    // RA deduction capped at 27.5% of income
+    const ra = provisionalTax({ turnover: 400000, retirementAnnual: 200000 });
+    near(ra.retirementDeduction, 110000);
+    // below the threshold: nothing to pay
+    assert.equal(provisionalTax({ turnover: 90000 }).totalProvisional, 0);
+});
