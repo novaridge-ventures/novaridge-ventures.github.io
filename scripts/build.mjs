@@ -119,10 +119,10 @@ ${jsonLd(p)}
 </head>
 <body>
 <header class="site"><div class="wrap"><a class="logo" href="/">Novaridge<span>Tools</span></a>
-<nav class="top" aria-label="Main"><a href="/sa-income-tax-calculator/">SA Tax</a><a href="/vat-calculator/">VAT</a><a href="/invoice-generator/">Invoice</a><a href="/sql-formatter/">SQL</a><a href="/shop/">Shop</a><a href="/">All tools</a></nav></div></header>
+<nav class="top" aria-label="Main"><a href="/sa-income-tax-calculator/">SA Tax</a><a href="/vat-calculator/">VAT</a><a href="/invoice-generator/">Invoice</a><a href="/sql-formatter/">SQL</a><a href="/services/">Services</a><a href="/shop/">Shop</a><a href="/">All tools</a></nav></div></header>
 <main><div class="wrap">${main}</div></main>
 <footer class="site"><div class="wrap"><p>&copy; ${new Date().getFullYear()} ${esc(cfg.brand)}. Free tools that run entirely in your browser; nothing you type is uploaded.</p>
-<p><a href="/about/">About</a><a href="/libraries/">Libraries</a><a href="/shop/">Shop</a><a href="/hosting-and-domains/">Hosting</a><a href="/dmarc-spf-dkim-checklist/">Email DNS guide</a><a href="/sa-government-tenders-guide/">Tenders guide</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms &amp; disclaimer</a><a href="mailto:${esc(cfg.contactEmail)}">Contact</a></p></div></footer>
+<p><a href="/about/">About</a><a href="/services/">Services</a><a href="/libraries/">Libraries</a><a href="/shop/">Shop</a><a href="/hosting-and-domains/">Hosting</a><a href="/dmarc-spf-dkim-checklist/">Email DNS guide</a><a href="/sa-government-tenders-guide/">Tenders guide</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms &amp; disclaimer</a><a href="mailto:${esc(cfg.contactEmail)}">Contact</a></p></div></footer>
 ${p.meta.shop ? `<script>window.NOVARIDGE_SHOP=${JSON.stringify({ checkoutUrl: (cfg.payfast?.checkoutUrl || '') })}</script>` : ''}
 ${p.meta.script ? `<script type="module" src="/assets/js/pages/${esc(p.meta.script)}"></script>` : ''}
 </body>
