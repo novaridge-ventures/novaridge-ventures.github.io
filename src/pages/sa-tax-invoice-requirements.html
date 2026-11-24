@@ -1,0 +1,67 @@
+<!--meta {
+"title": "SA Tax Invoice Requirements Checklist (VAT Act s20, SARS)",
+"h1": "South African tax invoice requirements: a SARS checklist",
+"description": "What a valid SA tax invoice must show under section 20 of the VAT Act: full vs abridged invoices, the R5 000 and R50 rules and the 21-day deadline.",
+"short": "Full vs abridged tax invoice, and the 7 details SARS requires.",
+"lead": "If a tax invoice is missing a required detail, your client cannot claim the VAT back, and SARS can disallow the claim. Enter the invoice total to see which type you need, then tick off each requirement. Your ticks are saved in this browser.",
+"category": "South Africa", "tool": true, "order": 2.5, "script": "vatinvoice.js", "appCategory": "BusinessApplication",
+"faq": [
+ {"q": "When do I need a full tax invoice instead of an abridged one?", "a": "Section 20(4) of the VAT Act requires a full tax invoice when the consideration (the VAT-inclusive price) is more than R5 000. At R5 000 or less, section 20(5) allows an abridged tax invoice, which can leave out the recipient's details and the quantity. Zero-rated supplies, such as exported goods, always need a full tax invoice."},
+ {"q": "Do I need a tax invoice for sales of R50 or less?", "a": "No. Section 20(6) says a tax invoice is not required when the total consideration is in money and does not exceed R50. A document such as a till slip or sales docket showing the VAT charged is still needed."},
+ {"q": "How long do I have to issue a tax invoice?", "a": "A VAT vendor must issue the tax invoice within 21 days of the date of the supply, whether or not the client asks for one (section 20(1))."},
+ {"q": "Must the invoice say 'Tax Invoice'?", "a": "It must contain the words 'tax invoice', 'VAT invoice' or 'invoice'. The last two have been accepted since 8 January 2016."},
+ {"q": "Can I issue a tax invoice in US dollars?", "a": "A tax invoice must be in rand, except for zero-rated supplies (for example exports) and certain electronic services supplied by non-residents, according to the SARS VAT 404 Guide for Vendors."}
+],
+"prose": "<h2>Make compliant invoices without the admin</h2><p>The <a href='https://payhip.com/b/3zPdT' target='_blank' rel='noopener'>Invoice &amp; Quote Generator</a> (Excel and Google Sheets) has the tax invoice fields above built in, including supplier and client VAT numbers, a running invoice number, quantity, the VAT at 15% and the VAT-inclusive total. It turns a quote into an invoice in one step. For a quick one-off invoice, try the free <a href='/invoice-generator/'>invoice generator</a>. To split a price into VAT and excl-VAT amounts, use the <a href='/vat-calculator/'>VAT calculator</a>.</p><p class='muted'>This page summarises section 20 of the Value-Added Tax Act 89 of 1991 and the SARS VAT 404 Guide for Vendors (Issue 15), as checked on 24 November 2026. It is general information, not tax advice. Special rules apply to second-hand goods, valuable metal under the domestic reverse charge, recipient-created invoices and electronic services, so check the sources or ask a registered tax practitioner.</p>"
+}-->
+<div class="card tool">
+  <div class="grid">
+    <div><label for="amount">Invoice total including VAT (R)</label><input id="amount" type="number" inputmode="decimal" value="6900" min="0"></div>
+    <div><label for="zero">Is the supply zero-rated (e.g. exported goods)?</label><select id="zero"><option value="no">No, standard-rated (15%)</option><option value="yes">Yes, zero-rated</option></select></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>
+
+<div class="card tool" id="checklist" data-key="nv-tax-invoice-checklist">
+  <p><strong id="progress">0 of 9 checks done</strong> <button class="btn" id="reset" type="button">Reset</button></p>
+
+  <h2>Details every tax invoice must show</h2>
+  <p><label><input type="checkbox" data-k="words" style="width:auto"> <strong>1. The words "Tax Invoice", "VAT Invoice" or "Invoice"</strong>, shown clearly. (s20(4)(a), s20(5)(a))</label></p>
+  <p><label><input type="checkbox" data-k="supplier" style="width:auto"> <strong>2. Your name, address and VAT registration number</strong> as the supplier. (s20(4)(b), s20(5)(b))</label></p>
+  <p><label><input type="checkbox" data-k="serial" style="width:auto"> <strong>3. A unique serial number and the date of issue.</strong> Only one tax invoice may be issued per supply; if one is lost, a replacement must be clearly marked "copy". (s20(4)(d), s20(1))</label></p>
+  <p><label><input type="checkbox" data-k="description" style="width:auto"> <strong>4. A full and proper description</strong> of the goods or services, saying where goods are second-hand. (s20(4)(e))</label></p>
+  <p><label><input type="checkbox" data-k="amounts" style="width:auto"> <strong>5. The price and the VAT</strong>, shown in one of the three ways SARS accepts: (a) value excluding VAT, the VAT and the total; (b) the VAT-inclusive total and the VAT amount; or (c) the VAT-inclusive total with a statement that it includes VAT at 15%. (s20(4)(g))</label></p>
+
+  <h2 data-full-only>Extra details on a full tax invoice (over R5 000 or zero-rated)</h2>
+  <p data-full-only><label><input type="checkbox" data-k="recipient" style="width:auto"> <strong>6. Your client's name and address</strong>, plus their VAT registration number if they are a VAT vendor. (s20(4)(c))</label></p>
+  <p data-full-only><label><input type="checkbox" data-k="quantity" style="width:auto"> <strong>7. The quantity or volume</strong> of the goods or services supplied, e.g. hours, units or kilograms. (s20(4)(f))</label></p>
+
+  <h2>Timing, currency and records</h2>
+  <p><label><input type="checkbox" data-k="days21" style="width:auto"> <strong>8. Issued within 21 days of the supply, in rand.</strong> The 21-day rule applies whether or not the client asks for an invoice. Only zero-rated supplies and certain non-resident electronic services may be invoiced in another currency. (s20(1), s20(4))</label></p>
+  <p><label><input type="checkbox" data-k="records" style="width:auto"> <strong>9. Copies kept for at least five years</strong>, together with credit and debit notes. Electronic invoices are allowed, and the same rules apply to them. (SARS VAT 404, Chapters 13 and 16)</label></p>
+</div>
+
+<h2>Full vs abridged tax invoice at a glance</h2>
+<table class="data"><thead><tr><th>Invoice total (incl. VAT)</th><th>What you must issue</th><th>VAT Act</th></tr></thead><tbody>
+<tr><td>R50 or less</td><td>No tax invoice required, but give a till slip or sales docket showing the VAT</td><td>s20(6)</td></tr>
+<tr><td>More than R50, up to R5 000</td><td>Abridged tax invoice (checks 1 to 5), or a full one</td><td>s20(5)</td></tr>
+<tr><td>More than R5 000</td><td>Full tax invoice (checks 1 to 7)</td><td>s20(4)</td></tr>
+<tr><td>Any amount, zero-rated supply</td><td>Full tax invoice</td><td>Proviso to s20(5)</td></tr>
+</tbody></table>
+<p>Only VAT vendors issue tax invoices. If you are not registered for VAT, do not charge VAT or show a VAT number. Send an ordinary invoice instead.</p>
+
+<h2>Common mistakes that get input VAT claims disallowed</h2>
+<ul>
+<li>A missing or wrong VAT number for the supplier, or for a VAT-registered client on invoices over R5 000.</li>
+<li>Vague descriptions such as "services rendered" with no detail of what was supplied.</li>
+<li>Re-using or skipping invoice numbers, or issuing a second "original" for the same supply instead of a copy, credit note or debit note.</li>
+<li>Showing only a total with no VAT amount and no statement of the VAT rate.</li>
+<li>Invoicing a local, standard-rated supply in a foreign currency.</li>
+</ul>
+
+<h2>Sources</h2>
+<ul>
+<li>SARS: <a href="https://www.sars.gov.za/businesses-and-employers/government/tax-invoices/" rel="noopener" target="_blank">Tax invoices</a> and the <a href="https://www.sars.gov.za/wp-content/uploads/Docs/Government/Tax-Invoice-Checklist-Version-2-29032016.pdf" rel="noopener" target="_blank">SARS tax invoice checklist (PDF)</a></li>
+<li>SARS: <a href="https://www.sars.gov.za/wp-content/uploads/Ops/Guides/Legal-Pub-Guide-VAT404-VAT-404-Guide-for-Vendors.pdf" rel="noopener" target="_blank">VAT 404 Guide for Vendors (PDF)</a>, Chapter 13: Tax invoices, debit and credit notes</li>
+<li>SARS: <a href="https://www.sars.gov.za/legal-counsel/primary-legislation/" rel="noopener" target="_blank">Primary legislation</a>, Value-Added Tax Act 89 of 1991, section 20</li>
+</ul>

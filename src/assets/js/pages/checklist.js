@@ -1,5 +1,5 @@
 import { $ } from './ui.js';
-const KEY = 'nv-backup-checklist';
+const KEY = document.getElementById('checklist')?.dataset.key || 'nv-backup-checklist';
 const box = $('checklist');
 const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
 const items = [...box.querySelectorAll('input[type=checkbox]')];
