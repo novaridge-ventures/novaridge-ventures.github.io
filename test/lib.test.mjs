@@ -135,3 +135,23 @@ test('provisional tax: two payments split the annual liability, PAYE credited', 
     // below the threshold: nothing to pay
     assert.equal(provisionalTax({ turnover: 90000 }).totalProvisional, 0);
 });
+
+import { simulatePayoff, compareStrategies, orderDebts } from '../src/assets/js/lib/debt.js';
+test('debt payoff: single debt with no interest pays off in balance/budget months', () => {
+    const r = simulatePayoff([{ balance: 1000, aprPct: 0, minPayment: 100 }], 250, 'snowball');
+    assert.equal(r.months, 4); assert.equal(r.totalInterest, 0); assert.equal(r.totalPaid, 1000);
+});
+test('debt payoff: ordering and avalanche never pays more interest than snowball', () => {
+    const debts = [{ name: 'Card', balance: 20000, aprPct: 21, minPayment: 600 }, { name: 'Store', balance: 3000, aprPct: 12, minPayment: 150 }, { name: 'Car', balance: 90000, aprPct: 13.5, minPayment: 2500 }];
+    assert.deepEqual(orderDebts(debts, 'snowball'), [1, 0, 2]);
+    assert.deepEqual(orderDebts(debts, 'avalanche'), [0, 2, 1]);
+    const c = compareStrategies(debts, 5000);
+    assert.ok(c.snowball.feasible && c.avalanche.feasible);
+    assert.ok(c.interestSaved >= 0);
+    assert.equal(c.snowball.payoffs[0].name, 'Store');
+    assert.ok(Math.abs(c.avalanche.totalPaid - (113000 + c.avalanche.totalInterest)) < 0.05);
+});
+test('debt payoff: budget below minimums and runaway interest are flagged', () => {
+    assert.equal(simulatePayoff([{ balance: 5000, aprPct: 20, minPayment: 500 }], 400).reason, 'budget-below-minimums');
+    assert.equal(simulatePayoff([{ balance: 100000, aprPct: 24, minPayment: 100 }], 100).feasible, false);
+});

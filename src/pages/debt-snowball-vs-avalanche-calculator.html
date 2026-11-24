@@ -1,0 +1,69 @@
+<!--meta {
+ "title": "Debt Snowball vs Avalanche Calculator (South Africa)",
+ "h1": "Debt Snowball vs Avalanche Calculator",
+ "description": "Compare the debt snowball and debt avalanche methods side by side: debt-free date, total interest and payoff order for up to 5 debts, in rand.",
+ "short": "Which payoff order saves more: snowball or avalanche?",
+ "lead": "Enter your debts and the total you can pay each month. The calculator runs both methods month by month and shows which one gets you debt-free sooner and with less interest.",
+ "category": "Money",
+ "tool": true,
+ "order": 4.5,
+ "script": "debt.js",
+ "appCategory": "FinanceApplication",
+ "faq": [
+  {
+   "q": "What is the difference between the debt snowball and debt avalanche?",
+   "a": "Both pay the minimum on every debt and put every extra rand on one target debt. The snowball targets the smallest balance first; the avalanche targets the highest interest rate first. When a debt is paid off, its minimum rolls into the next target."
+  },
+  {
+   "q": "Which method saves the most money?",
+   "a": "The avalanche always costs the same or less interest, because each extra rand goes to the most expensive debt. The snowball can cost more, but it clears small debts quickly, which helps some people stay motivated. Run your own numbers to see how big the gap actually is."
+  },
+  {
+   "q": "Why does the calculator say my budget is too low?",
+   "a": "Your monthly amount must at least cover every minimum payment. If it does but the debts still never clear, interest is growing faster than you are paying and you need to increase the monthly amount."
+  },
+  {
+   "q": "Why are the results slightly different from my statements?",
+   "a": "SA lenders calculate interest daily and may charge monthly service fees and credit life insurance. This calculator uses a fixed annual rate divided by 12 and no fees, so treat the dates as close estimates."
+  },
+  {
+   "q": "What if I cannot afford my minimum payments?",
+   "a": "Debt counselling (debt review) under the National Credit Act is a debt relief measure for over-indebted consumers. A registered debt counsellor assesses your income against expenses and debt, and can negotiate reduced, restructured payments with credit providers. The National Credit Regulator lists registered debt counsellors."
+  }
+ ],
+ "prose": "<h2>How the snowball and avalanche are calculated</h2><p>Each month, interest is added to every open balance at the annual rate divided by 12. Every debt then receives its minimum payment. Whatever is left of your monthly amount goes to the target debt: the smallest balance (snowball) or the highest rate (avalanche). When a debt is cleared, the money that was going to it rolls into the next target in the same month, so your total monthly payment stays the same until you are debt-free.</p><h2>Which one should you choose?</h2><p>If the interest difference is small, pick the snowball if quick wins will keep you going. If one debt carries a much higher rate than the rest (a store card or credit card next to a car loan, for example), the avalanche usually saves a meaningful amount. Either method beats paying only the minimums. The single biggest lever is the monthly amount: try adding R500 and watch the debt-free date move.</p><h2>Getting help if you are over-indebted</h2><p>If you cannot cover the minimums, the <a href='https://www.ncr.org.za/index.php/departments/debt-counselling' target='_blank' rel='noopener'>National Credit Regulator</a> explains debt counselling (debt review), a debt relief measure provided for in the <a href='https://www.gov.za/documents/national-credit-act' target='_blank' rel='noopener'>National Credit Act 34 of 2005</a>. Use a counsellor who is registered with the NCR.</p><h2>Want the full month-by-month plan?</h2><p>The <a href='https://payhip.com/b/3q49k' target='_blank' rel='noopener'>Debt Payoff Planner</a> (Excel and Google Sheets) handles up to 15 debts, compares snowball, avalanche and your own custom order, and shows a month-by-month schedule, a budget tab and a payment log. To track spending alongside it, see the <a href='https://payhip.com/b/YAogS' target='_blank' rel='noopener'>Finance Tracker</a>.</p><p class='muted'>Estimate only, not financial advice. Sources: National Credit Regulator, Debt Counselling; National Credit Act 34 of 2005 (gov.za). Related: <a href='/home-loan-calculator/'>home loan calculator</a>, <a href='/compound-interest-calculator/'>compound interest calculator</a>.</p>"
+}-->
+<div class="card tool">
+  <div><label for="budget">Total you can pay towards debt each month (R)</label><input id="budget" type="number" inputmode="decimal" value="8000" min="0"></div>
+  <div class="grid2" style="grid-template-columns:2fr 1.5fr 1fr 1.2fr">
+    <div><label for="n1">Debt 1 name</label><input id="n1" type="text" value="Credit card" maxlength="40"></div>
+    <div><label for="b1">Balance (R)</label><input id="b1" type="number" inputmode="decimal" value="25000" min="0"></div>
+    <div><label for="r1">Interest % a year</label><input id="r1" type="number" inputmode="decimal" value="21" min="0" step="0.25"></div>
+    <div><label for="m1">Minimum / month (R)</label><input id="m1" type="number" inputmode="decimal" value="750" min="0"></div>
+  </div>
+  <div class="grid2" style="grid-template-columns:2fr 1.5fr 1fr 1.2fr">
+    <div><label for="n2">Debt 2 name</label><input id="n2" type="text" value="Store card" maxlength="40"></div>
+    <div><label for="b2">Balance (R)</label><input id="b2" type="number" inputmode="decimal" value="4000" min="0"></div>
+    <div><label for="r2">Interest % a year</label><input id="r2" type="number" inputmode="decimal" value="19.5" min="0" step="0.25"></div>
+    <div><label for="m2">Minimum / month (R)</label><input id="m2" type="number" inputmode="decimal" value="200" min="0"></div>
+  </div>
+  <div class="grid2" style="grid-template-columns:2fr 1.5fr 1fr 1.2fr">
+    <div><label for="n3">Debt 3 name</label><input id="n3" type="text" value="Personal loan" maxlength="40"></div>
+    <div><label for="b3">Balance (R)</label><input id="b3" type="number" inputmode="decimal" value="40000" min="0"></div>
+    <div><label for="r3">Interest % a year</label><input id="r3" type="number" inputmode="decimal" value="24" min="0" step="0.25"></div>
+    <div><label for="m3">Minimum / month (R)</label><input id="m3" type="number" inputmode="decimal" value="1600" min="0"></div>
+  </div>
+  <div class="grid2" style="grid-template-columns:2fr 1.5fr 1fr 1.2fr">
+    <div><label for="n4">Debt 4 name</label><input id="n4" type="text" value="Car finance" maxlength="40"></div>
+    <div><label for="b4">Balance (R)</label><input id="b4" type="number" inputmode="decimal" value="120000" min="0"></div>
+    <div><label for="r4">Interest % a year</label><input id="r4" type="number" inputmode="decimal" value="13.75" min="0" step="0.25"></div>
+    <div><label for="m4">Minimum / month (R)</label><input id="m4" type="number" inputmode="decimal" value="3100" min="0"></div>
+  </div>
+  <div class="grid2" style="grid-template-columns:2fr 1.5fr 1fr 1.2fr">
+    <div><label for="n5">Debt 5 name</label><input id="n5" type="text" value="" maxlength="40"></div>
+    <div><label for="b5">Balance (R)</label><input id="b5" type="number" inputmode="decimal" value="" min="0"></div>
+    <div><label for="r5">Interest % a year</label><input id="r5" type="number" inputmode="decimal" value="" min="0" step="0.25"></div>
+    <div><label for="m5">Minimum / month (R)</label><input id="m5" type="number" inputmode="decimal" value="" min="0"></div>
+  </div>
+  <div class="result" id="out" aria-live="polite"></div>
+</div>
