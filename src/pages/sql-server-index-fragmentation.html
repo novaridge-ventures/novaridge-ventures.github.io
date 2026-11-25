@@ -1,0 +1,51 @@
+<!--meta {
+"title": "SQL Server Index Fragmentation: Reorganize or Rebuild?",
+"h1": "SQL Server Index Fragmentation Checker",
+"description": "Check SQL Server index fragmentation and page density with one query, paste the results, and get reorganize, rebuild or leave-it suggestions with ALTER INDEX scripts.",
+"short": "Paste DMV output, get reorganize/rebuild/leave suggestions.",
+"lead": "Run the query, paste the results, and see which indexes are worth maintaining. Everything runs in your browser; nothing you paste is uploaded.",
+"category": "Developer", "tool": true, "order": 8.6, "script": "indexmaint.js", "appCategory": "DeveloperApplication",
+"faq": [
+ {"q": "What fragmentation percentage should trigger a rebuild?", "a": "There is no single right number. Microsoft's current guidance is that index maintenance decisions should consider the workload and the resource cost and should not be based on fixed fragmentation or page density thresholds alone. Use the thresholds on this page as review triggers, then measure query performance before and after."},
+ {"q": "Should I reorganize or rebuild?", "a": "Microsoft recommends REORGANIZE as the preferred method unless you have a specific reason to rebuild: it uses fewer resources and is always an online operation. REBUILD removes fragmentation at every level and updates statistics with a full scan, but it needs space for a second copy of the index and, offline, blocks access to the table."},
+ {"q": "Why did performance improve after I rebuilt indexes?", "a": "Often because a rebuild also updates statistics on the index keys with a full scan, which triggers new query plans. Microsoft notes the same benefit can often be had much more cheaply with UPDATE STATISTICS. Reorganize does not update statistics, so the generated script adds an UPDATE STATISTICS after each reorganize."},
+ {"q": "Why ignore small indexes?", "a": "Rebuilding or reorganizing small rowstore indexes usually doesn't reduce fragmentation, and scanning a few hundred pages is cheap anyway. The 1,000-page floor here is a starting point you can change."},
+ {"q": "Can I rebuild online?", "a": "Online index rebuilds are not available in every edition of SQL Server; check the editions and supported features page for your version. They are available in Azure SQL Database and Azure SQL Managed Instance. Tick the ONLINE option only if your edition supports it."}
+],
+"prose": "<h2>How to use the result</h2><p>Microsoft's recommended strategy is simple: don't assume maintenance helps, measure it. Capture query performance in Query Store, update statistics first and see whether that alone fixes the slow queries, and only reorganize or rebuild the specific indexes behind queries that got slower as fragmentation rose or page density fell. Run maintenance in a quiet window, and keep fill factor at 100 (or 0) unless an index really suffers from page splits, for example one keyed on random GUIDs.</p><h2>Things that catch people out</h2><ul><li>REORGANIZE fails if the index has ALLOW_PAGE_LOCKS = OFF, and it needs free space in the same data file.</li><li>REBUILD needs room for two copies of the index until it finishes.</li><li>Columnstore indexes use a different measure: deleted rows per row group, from sys.dm_db_column_store_row_group_physical_stats.</li><li>Heaps have no index to reorganize; ALTER TABLE ... REBUILD rebuilds a heap.</li></ul><h2>Schedule it instead of doing it by hand</h2><p>The <a href='https://payhip.com/b/iTWh0' target='_blank' rel='noopener'>SQL Server DBA Toolkit</a> ($19) has tested scripts for index health, missing and unused indexes, statistics age, blocking, waits and backups, plus PowerShell and bash runners to schedule them and email the output. Need someone to look at a slow database for you? See the fixed-price <a href='/services/'>SQL Server health report</a>.</p><p class='muted'>Sources: Microsoft Learn, <a href='https://learn.microsoft.com/en-us/sql/relational-databases/indexes/reorganize-and-rebuild-indexes' target='_blank' rel='noopener'>Optimize index maintenance to improve query performance and reduce resource consumption</a>; <a href='https://learn.microsoft.com/en-us/sql/relational-databases/system-dynamic-management-views/sys-dm-db-index-physical-stats-transact-sql' target='_blank' rel='noopener'>sys.dm_db_index_physical_stats</a>; <a href='https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-index-transact-sql' target='_blank' rel='noopener'>ALTER INDEX</a>; <a href='https://learn.microsoft.com/en-us/sql/relational-databases/indexes/perform-index-operations-online' target='_blank' rel='noopener'>Perform index operations online</a>. Related: <a href='/sql-server-backup-verification-checklist/'>backup verification checklist</a>, <a href='/sql-formatter/'>SQL formatter</a>.</p>"
+}-->
+<div class="card tool">
+  <h2>1. Run this in the database you want to check</h2>
+  <pre class="out">SELECT OBJECT_SCHEMA_NAME(ips.object_id) AS schema_name,
+       OBJECT_NAME(ips.object_id) AS object_name,
+       i.name AS index_name,
+       i.type_desc AS index_type,
+       ips.avg_fragmentation_in_percent,
+       ips.avg_page_space_used_in_percent,
+       ips.page_count,
+       ips.alloc_unit_type_desc
+FROM sys.dm_db_index_physical_stats(DB_ID(), DEFAULT, DEFAULT, DEFAULT, 'SAMPLED') AS ips
+     INNER JOIN sys.indexes AS i
+         ON ips.object_id = i.object_id
+        AND ips.index_id = i.index_id
+ORDER BY page_count DESC;</pre>
+  <p class="muted">This is Microsoft's own example query. SAMPLED is quick; DETAILED is more accurate but reads every page, so avoid it on big tables during business hours. In SSMS, right-click the results grid and choose Copy with Headers.</p>
+
+  <h2>2. Paste the results</h2>
+  <label for="rows">Rows (tab- or comma-separated)</label>
+  <textarea id="rows" rows="7" spellcheck="false">schema_name	object_name	index_name	index_type	avg_fragmentation_in_percent	avg_page_space_used_in_percent	page_count	alloc_unit_type_desc
+dbo	Orders	IX_Orders_CustomerId	NONCLUSTERED	47.3	68.2	52310	IN_ROW_DATA
+dbo	Orders	PK_Orders	CLUSTERED	3.1	98.4	188004	IN_ROW_DATA
+dbo	Shipments	IX_Shipments_Waybill	NONCLUSTERED	88.0	55.0	412	IN_ROW_DATA
+dbo	AuditLog	NULL	HEAP	0	97.2	9001	IN_ROW_DATA</textarea>
+  <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+    <div><label for="minPages">Ignore indexes under (pages)</label><input id="minPages" type="number" value="1000" min="0"></div>
+    <div><label for="fragPct">Review if fragmentation ≥ (%)</label><input id="fragPct" type="number" value="30" min="0" max="100"></div>
+    <div><label for="densityPct">Review if page density &lt; (%)</label><input id="densityPct" type="number" value="75" min="0" max="100"></div>
+  </div>
+  <label><input type="checkbox" id="online" style="width:auto"> Use ONLINE = ON for rebuilds (only if your edition supports it)</label>
+  <div id="out" class="result" aria-live="polite"></div>
+  <h2>3. Suggested T-SQL</h2>
+  <pre class="out" id="sqlout"></pre>
+  <button class="btn" id="copy" type="button">Copy SQL</button>
+</div>
